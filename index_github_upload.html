@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suedeză pentru Români</title>
+<style>
+:root{--bg:#f4f4f5;--panel:#fff;--text:#111827;--muted:#6b7280;--border:#d4d4d8;--dark:#111827}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:var(--dark);color:white;padding:14px;text-align:center;position:sticky;top:0;z-index:5}header h1{font-size:18px;margin:0}
+nav{display:flex;gap:8px;overflow:auto;padding:10px;background:white;border-bottom:1px solid var(--border);position:sticky;top:48px;z-index:4}
+button,input,select,textarea{font:inherit;border-radius:12px;border:1px solid var(--border);padding:11px}button{background:var(--dark);color:white;border:0;flex:1;min-width:105px}
+button.secondary{background:white;color:var(--text);border:1px solid var(--border)}button.good{background:#166534}button.bad{background:#991b1b}button.warn{background:#92400e}
+main{max-width:960px;margin:auto;padding:14px}.hidden{display:none}.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input,select,textarea{width:100%;background:white}section{background:white;border:1px solid var(--border);border-radius:16px;padding:14px;margin-top:16px}h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 6px}
+.card{white-space:pre-line;background:white;border:1px solid var(--border);border-radius:22px;min-height:310px;padding:24px;display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.word{font-size:31px;font-weight:780;line-height:1.25}.meta,.small{font-size:13px;color:var(--muted);line-height:1.45}.meta{margin-top:12px}
+.list{max-height:520px;overflow:auto;border-top:1px solid var(--border);margin-top:10px}.item{padding:10px 0;border-bottom:1px solid #eee;font-size:14px;line-height:1.45}
+.badge{display:inline-block;background:#e5e7eb;color:#374151;border-radius:999px;padding:2px 8px;margin:2px;font-size:12px}.note{background:#fff8d7;border:1px solid #eadb8b;border-radius:12px;padding:10px;font-size:14px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid #eee;padding:8px;text-align:left;vertical-align:top}
+pre{white-space:pre-wrap;background:#f4f4f5;border:1px solid var(--border);border-radius:12px;padding:10px;font-size:12px;overflow:auto}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.word{font-size:27px}nav button{min-width:94px}}
+</style>
+</head>
+<body>
+<header><h1>Suedeză pentru Români</h1></header>
+<nav>
+<button onclick="showTab('cards')">Carduri</button>
+<button class="secondary" onclick="showTab('vocab')">Vocabular</button>
+<button class="secondary" onclick="showTab('expressions')">Expresii</button>
+<button class="secondary" onclick="showTab('add')">Adaugă</button>
+<button class="secondary" onclick="showTab('grammar')">Gramatică</button>
+<button class="secondary" onclick="showTab('update')">Update</button>
+<button class="secondary" onclick="showTab('stats')">Progres</button>
+</nav>
+<main>
+<div id="tab-cards">
+  <div class="small" id="topstats"></div>
+  <div class="card" onclick="flipCard()"><div><div id="word" class="word"></div><div id="meta" class="meta"></div></div></div>
+  <div class="row"><button class="secondary" onclick="prevCard()">Înapoi</button><button onclick="flipCard()">Întoarce</button><button class="secondary" onclick="nextCard()">Următor</button></div>
+  <div class="row"><button class="good" onclick="rateCard(5)">Ușor</button><button class="warn" onclick="rateCard(3)">Greu</button><button class="bad" onclick="rateCard(1)">Nu știu</button><button class="secondary" onclick="speakCurrent(0.9)">🔊 Ascultă</button><button class="secondary" onclick="speakCurrent(0.62)">🐢 Lent</button></div>
+  <section><h2>Filtre</h2><div class="grid">
+    <select id="mode" onchange="render()"><option value="ro-sv">Română → Suedeză</option><option value="sv-ro">Suedeză → Română</option></select>
+    <select id="filter" onchange="resetIndex()"><option value="due">De repetat azi</option><option value="all">Toate cardurile</option><option value="known">Știute</option><option value="unknown">Neștiute</option></select>
+    <select id="level" onchange="resetIndex()"><option value="all">Toate nivelurile</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select>
+    <select id="posfilter" onchange="resetIndex()"><option value="all">Toate părțile</option><option value="subst.">Substantive</option><option value="verb">Verbe</option><option value="adj.">Adjective</option><option value="adv.">Adverbe</option><option value="pron.">Pronume</option><option value="prep.">Prepoziții</option><option value="conj.">Conjuncții</option><option value="expresie">Expresii</option></select>
+  </div><input id="search" placeholder="Caută..." oninput="resetIndex()"></section>
+</div>
+
+<div id="tab-vocab" class="hidden"><section><h2>Vocabular</h2><input id="searchVocab" placeholder="Caută în vocabular..." oninput="renderVocab()"><div id="vocabList" class="list"></div></section></div>
+<div id="tab-expressions" class="hidden"><section><h2>Expresii</h2><input id="searchExpr" placeholder="Caută expresie..." oninput="renderExpressions()"><div id="exprList" class="list"></div></section></div>
+
+<div id="tab-add" class="hidden">
+<section><h2>Adaugă card local</h2>
+<input id="ro" placeholder="Română">
+<div class="grid"><input id="sv" placeholder="Suedeză"><input id="pron_ro" placeholder="Pronunție română"><input id="base" placeholder="Bază"><input id="article" placeholder="en / ett"><input id="plural" placeholder="Plural"><input id="def_sg" placeholder="Hotărât singular"><input id="def_pl" placeholder="Hotărât plural"><input id="tags" placeholder="Etichete"></div>
+<div class="grid"><select id="pos"><option value="subst.">substantiv</option><option value="verb">verb</option><option value="adj.">adjectiv</option><option value="expresie">expresie</option></select><select id="addlevel"><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></div>
+<div class="grid"><input id="present" placeholder="Prezent"><input id="past" placeholder="Trecut"><input id="supine" placeholder="Supin"><input id="imperative" placeholder="Imperativ"></div>
+<input id="example_sv" placeholder="Exemplu suedeză"><input id="example_ro" placeholder="Traducere exemplu">
+<div class="row"><button onclick="addLocalCard()">Adaugă local</button><button class="secondary" onclick="exportProgress()">Export progres</button></div>
+<div class="note">Cardurile adăugate aici se salvează doar pe acest telefon/browser. Pentru update pe toate telefoanele, adaugă-le în data.json pe GitHub.</div>
+</section>
+</div>
+
+<div id="tab-grammar" class="hidden"><section><h2>Gramatică</h2><div id="grammarList"></div></section></div>
+
+<div id="tab-update" class="hidden">
+<section>
+<h2>Actualizare din GitHub</h2>
+<p class="small">Aplicația descarcă automat fișierul <b>data.json</b> din același repository în care este publicat acest HTML.</p>
+<div class="row"><button onclick="updateFromGitHub()">Actualizează baza de date</button><button class="secondary" onclick="forceLocalData()">Folosește datele salvate local</button></div>
+<div id="updateStatus" class="note"></div>
+</section>
+<section><h2>Fișiere necesare în GitHub</h2><pre>index.html
+data.json</pre></section>
+</div>
+
+<div id="tab-stats" class="hidden"><section><h2>Progres</h2><div id="progress"></div></section></div>
+</main>
+
+<script>
+const starterData = {"version": "1.0.0", "lastUpdate": "2026-07-09", "vocabulary": [{"ro": "casă", "sv": "ett hus", "pron_ro": "huus", "article": "ett", "base": "hus", "plural": "hus", "def_sg": "huset", "def_pl": "husen", "pos": "subst.", "level": "A1", "example_sv": "Jag bor i ett hus.", "example_ro": "Locuiesc într-o casă.", "present": "", "past": "", "supine": "", "imperative": "", "tags": "locuință"}, {"ro": "mașină", "sv": "en bil", "pron_ro": "biil", "article": "en", "base": "bil", "plural": "bilar", "def_sg": "bilen", "def_pl": "bilarna", "pos": "subst.", "level": "A1", "example_sv": "Jag har en bil.", "example_ro": "Am o mașină.", "present": "", "past": "", "supine": "", "imperative": "", "tags": "transport"}, {"ro": "copil", "sv": "ett barn", "pron_ro": "baan", "article": "ett", "base": "barn", "plural": "barn", "def_sg": "barnet", "def_pl": "barnen", "pos": "subst.", "level": "A1", "example_sv": "Barnet leker.", "example_ro": "Copilul se joacă.", "present": "", "past": "", "supine": "", "imperative": "", "tags": "familie"}], "expressions": [{"ro": "Bună!", "sv": "Hej!", "pron_ro": "hei", "article": "", "base": "hej", "plural": "", "def_sg": "", "def_pl": "", "pos": "expresie", "level": "A1", "example_sv": "Hej! Hur mår du?", "example_ro": "Bună! Ce mai faci?", "present": "", "past": "", "supine": "", "imperative": "", "tags": "saluturi"}, {"ro": "Mulțumesc!", "sv": "Tack!", "pron_ro": "tac", "article": "", "base": "tack", "plural": "", "def_sg": "", "def_pl": "", "pos": "expresie", "level": "A1", "example_sv": "Tack så mycket!", "example_ro": "Mulțumesc!", "present": "", "past": "", "supine": "", "imperative": "", "tags": "saluturi"}, {"ro": "La revedere!", "sv": "Hej då!", "pron_ro": "hei do", "article": "", "base": "hej då", "plural": "", "def_sg": "", "def_pl": "", "pos": "expresie", "level": "A1", "example_sv": "Hej då!", "example_ro": "La revedere!", "present": "", "past": "", "supine": "", "imperative": "", "tags": "saluturi"}], "verbs": [{"ro": "a fi", "sv": "att vara", "pron_ro": "vaara", "article": "", "base": "vara", "plural": "", "def_sg": "", "def_pl": "", "pos": "verb", "level": "A1", "example_sv": "Jag är hemma.", "example_ro": "Sunt acasă.", "present": "är", "past": "var", "supine": "varit", "imperative": "var", "tags": "verbe"}, {"ro": "a avea", "sv": "att ha", "pron_ro": "haa", "article": "", "base": "ha", "plural": "", "def_sg": "", "def_pl": "", "pos": "verb", "level": "A1", "example_sv": "Jag har tid.", "example_ro": "Am timp.", "present": "har", "past": "hade", "supine": "haft", "imperative": "ha", "tags": "verbe"}, {"ro": "a merge", "sv": "att gå", "pron_ro": "goo", "article": "", "base": "gå", "plural": "", "def_sg": "", "def_pl": "", "pos": "verb", "level": "A1", "example_sv": "Jag går hem.", "example_ro": "Merg acasă.", "present": "går", "past": "gick", "supine": "gått", "imperative": "gå", "tags": "verbe"}], "grammar": [{"categorie": "Substantive", "titlu": "en / ett", "explicatie": "Fiecare substantiv are articol.", "exemplu_sv": "en bil / ett hus", "exemplu_ro": "o mașină / o casă"}]};
+let appData = JSON.parse(localStorage.getItem("sv_ro_app_data_json") || "null") || starterData;
+let cards = [];
+let index = 0, flipped = false;
+
+function norm(s){return String(s||"").trim().toLowerCase()}
+function today(){return new Date().toISOString().slice(0,10)}
+function addDays(n){const d=new Date();d.setDate(d.getDate()+Math.max(0,Math.round(n)));return d.toISOString().slice(0,10)}
+function saveData(){localStorage.setItem("sv_ro_app_data_json", JSON.stringify(appData))}
+function saveProgress(){localStorage.setItem("sv_ro_progress", JSON.stringify(getProgressMap()))}
+function getProgressMap(){const p={};cards.forEach(c=>{p[norm(c.ro)+"|"+norm(c.sv)]={known:c.known,ease:c.ease,interval:c.interval,reps:c.reps,due:c.due,right:c.right,wrong:c.wrong}});return p}
+function applyProgress(){let p={};try{p=JSON.parse(localStorage.getItem("sv_ro_progress")||"{}")}catch(e){} cards.forEach(c=>{const x=p[norm(c.ro)+"|"+norm(c.sv)]; if(x) Object.assign(c,x)})}
+function normalizeCard(c, pos){return {known:false,ease:2.5,interval:0,reps:0,due:"2000-01-01",right:0,wrong:0,level:"A1",pos:pos||"subst.",...c}}
+function rebuildCards(){cards=[...(appData.vocabulary||[]).map(c=>normalizeCard(c,"subst.")),...(appData.expressions||[]).map(c=>normalizeCard(c,"expresie")),...(appData.verbs||[]).map(c=>normalizeCard(c,"verb"))];applyProgress()}
+function showTab(name){["cards","vocab","expressions","add","grammar","update","stats"].forEach(t=>document.getElementById("tab-"+t).classList.add("hidden"));document.getElementById("tab-"+name).classList.remove("hidden");render()}
+
+function filteredCards(){const q=norm(document.getElementById("search")?.value),f=document.getElementById("filter")?.value||"due",lev=document.getElementById("level")?.value||"all",part=document.getElementById("posfilter")?.value||"all";return cards.filter(c=>{const m=!q||norm(c.ro).includes(q)||norm(c.sv).includes(q)||norm(c.base).includes(q)||norm(c.pron_ro).includes(q);const st=f==="all"||(f==="known"&&c.known)||(f==="unknown"&&!c.known)||(f==="due"&&(c.due||"2000-01-01")<=today());return m&&st&&(lev==="all"||c.level===lev)&&(part==="all"||c.pos===part)})}
+function conj(c){const b=String(c.base||c.sv||"").replace(/^att\s+/i,"");return {present:c.present||(b.endsWith("a")?b+"r":b+"er"),past:c.past||(b.endsWith("a")?b+"de":b+"de"),supine:c.supine||(b.endsWith("a")?b.slice(0,-1)+"at":b+"t"),imperative:c.imperative||b}}
+function svSide(c){const lines=["🇸🇪 "+(c.sv||"")];if(c.pron_ro)lines.push("🗣️ Pronunție: "+c.pron_ro);if(c.pos==="subst."){if(c.article)lines.push("Articol: "+c.article);if(c.plural)lines.push("Plural: "+c.plural);if(c.def_sg||c.def_pl)lines.push("Hotărât: "+(c.def_sg||"-")+" / "+(c.def_pl||"-"))}if(c.pos==="verb"){const g=conj(c);lines.push("Prezent: "+g.present,"Trecut: "+g.past,"Supin: "+g.supine,"Imperativ: "+g.imperative)}if(c.example_sv)lines.push("\n💬 "+c.example_sv);if(c.example_ro)lines.push("🇷🇴 "+c.example_ro);return lines.join("\n")}
+function roSide(c){return c.ro||""}
+function render(){const arr=filteredCards(),word=document.getElementById("word"),meta=document.getElementById("meta");if(!arr.length){word.textContent="Niciun card";meta.textContent="Schimbă filtrul sau actualizează baza de date"}else{if(index>=arr.length)index=0;const c=arr[index],mode=document.getElementById("mode").value;word.textContent=mode==="ro-sv"?(flipped?svSide(c):roSide(c)):(flipped?roSide(c):svSide(c));meta.textContent=(flipped?"răspuns":"întrebare")+" · "+(index+1)+"/"+arr.length+" · "+(c.pos||"")+" · "+(c.level||"")+" · due "+(c.due||today())}const known=cards.filter(c=>c.known).length,due=cards.filter(c=>(c.due||"2000-01-01")<=today()).length;document.getElementById("topstats").textContent=cards.length+" carduri · "+known+" știute · "+due+" de repetat azi · data.json v"+(appData.version||"");renderVocab();renderExpressions();renderGrammar();renderProgress()}
+function resetIndex(){index=0;flipped=false;render()}function flipCard(){flipped=!flipped;render()}function nextCard(){const a=filteredCards();if(a.length){index=(index+1)%a.length;flipped=false;render()}}function prevCard(){const a=filteredCards();if(a.length){index=(index-1+a.length)%a.length;flipped=false;render()}}function currentCard(){return filteredCards()[index]}
+function rateCard(q){const c=currentCard();if(!c)return;if(q<3){c.reps=0;c.interval=1;c.ease=Math.max(1.3,(c.ease||2.5)-0.2);c.known=false;c.wrong=(c.wrong||0)+1;c.due=today()}else{c.reps=(c.reps||0)+1;c.right=(c.right||0)+1;c.known=true;if(c.reps===1)c.interval=1;else if(c.reps===2)c.interval=3;else c.interval=Math.round((c.interval||3)*(c.ease||2.5));if(q===5)c.ease=(c.ease||2.5)+0.15;if(q===3)c.ease=Math.max(1.3,(c.ease||2.5)-0.05);c.due=addDays(c.interval)}saveProgress();nextCard()}
+function speakCurrent(rate){const c=currentCard();if(!c)return;if(!("speechSynthesis" in window)){alert("Telefonul/browserul nu are text-to-speech.");return}const text=String(c.base||c.sv||"").replace(/^en\s+|^ett\s+|^att\s+/i,"");const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";u.rate=rate||0.9;speechSynthesis.cancel();speechSynthesis.speak(u)}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function renderList(elId, filterFn){const el=document.getElementById(elId);if(!el)return;el.innerHTML="";cards.filter(filterFn).slice(0,1500).forEach(c=>{const d=document.createElement("div");d.className="item";d.innerHTML="<b>"+esc(c.ro)+"</b> = "+esc(c.sv)+" <span class='badge'>"+esc(c.pos)+"</span><span class='badge'>"+esc(c.level)+"</span>"+(c.pron_ro?"<br><span class='small'>🗣️ "+esc(c.pron_ro)+"</span>":"")+(c.example_sv?"<br><span class='small'>💬 "+esc(c.example_sv)+" = "+esc(c.example_ro)+"</span>":"");el.appendChild(d)})}
+function renderVocab(){const q=norm(document.getElementById("searchVocab")?.value);renderList("vocabList",c=>c.pos!=="expresie"&&(!q||norm(c.ro).includes(q)||norm(c.sv).includes(q)||norm(c.pron_ro).includes(q)))}
+function renderExpressions(){const q=norm(document.getElementById("searchExpr")?.value);renderList("exprList",c=>c.pos==="expresie"&&(!q||norm(c.ro).includes(q)||norm(c.sv).includes(q)||norm(c.pron_ro).includes(q)))}
+function renderGrammar(){const el=document.getElementById("grammarList");if(!el)return;el.innerHTML="";(appData.grammar||[]).forEach(g=>{const d=document.createElement("div");d.className="item";d.innerHTML="<h3>"+esc(g.titlu||g.title||"Regulă")+"</h3><p>"+esc(g.explicatie||g.text||"")+"</p>"+(g.exemplu_sv?"<p><b>"+esc(g.exemplu_sv)+"</b> = "+esc(g.exemplu_ro)+"</p>":"");el.appendChild(d)})}
+function renderProgress(){const el=document.getElementById("progress");if(!el)return;const by={};cards.forEach(c=>by[c.level]=(by[c.level]||0)+1);el.innerHTML="<table><tr><th>Total</th><td>"+cards.length+"</td></tr><tr><th>Știute</th><td>"+cards.filter(c=>c.known).length+"</td></tr><tr><th>De repetat azi</th><td>"+cards.filter(c=>(c.due||'2000-01-01')<=today()).length+"</td></tr><tr><th>Versiune date</th><td>"+esc(appData.version||"")+"</td></tr><tr><th>Niveluri</th><td>"+Object.entries(by).map(x=>x[0]+': '+x[1]).join(', ')+"</td></tr></table>"}
+function addLocalCard(){const c={ro:ro.value.trim(),sv:sv.value.trim(),pron_ro:pron_ro.value.trim(),base:base.value.trim(),article:article.value.trim(),plural:plural.value.trim(),def_sg:def_sg.value.trim(),def_pl:def_pl.value.trim(),pos:pos.value,level:addlevel.value,present:present.value.trim(),past:past.value.trim(),supine:supine.value.trim(),imperative:imperative.value.trim(),example_sv:example_sv.value.trim(),example_ro:example_ro.value.trim(),tags:tags.value.trim()};if(!c.ro||!c.sv){alert("Completează română și suedeză.");return}if(c.pos==="expresie")appData.expressions=appData.expressions||[],appData.expressions.push(c);else if(c.pos==="verb")appData.verbs=appData.verbs||[],appData.verbs.push(c);else appData.vocabulary=appData.vocabulary||[],appData.vocabulary.push(c);saveData();rebuildCards();render();alert("Card salvat local.")}
+function dataUrl(){return new URL("data.json?t="+Date.now(), window.location.href).href}
+async function updateFromGitHub(){const st=document.getElementById("updateStatus");st.textContent="Descarc data.json...";try{const res=await fetch(dataUrl(),{cache:"no-store"});if(!res.ok)throw new Error("Nu pot descărca data.json. Verifică dacă există în repository.");const data=await res.json();const before=cards.length;appData=data;saveData();rebuildCards();saveProgress();render();st.textContent="Actualizare reușită. Versiune: "+(appData.version||"")+". Carduri: "+before+" → "+cards.length+"."}catch(e){st.textContent="Eroare: "+e.message+" Dacă ai deschis fișierul din WhatsApp/local, update-ul nu merge. Deschide-l prin linkul GitHub Pages."}}
+function forceLocalData(){appData=JSON.parse(localStorage.getItem("sv_ro_app_data_json")||"null")||starterData;rebuildCards();render();document.getElementById("updateStatus").textContent="Folosesc datele salvate local."}
+function exportProgress(){const blob=new Blob([JSON.stringify(getProgressMap(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="progres_suedeza.json";a.click()}
+rebuildCards();render();
+</script>
+</body></html>
