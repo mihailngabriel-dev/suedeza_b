@@ -1,0 +1,8 @@
+1. Descarcă suedeza_b_v2.zip și dezarhivează.
+2. În repository-ul suedeza_b, încarcă toate fișierele din arhivă.
+3. Apasă Commit changes.
+4. Settings -> Pages -> Deploy from a branch -> main -> /(root) -> Save.
+5. Deschide https://mihailngabriel-dev.github.io/suedeza_b/
+6. Pentru update viitor, înlocuiește doar data.json.
+7. În aplicație: Setări -> Actualizează baza de date.
+8. Pentru audio pe Windows, instalează o voce suedeză din Settings -> Time & language -> Speech.
